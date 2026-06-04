@@ -2,19 +2,16 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-
-# Load saved model, scaler, and expected columns
+# Load files
 model = joblib.load("KNN_model.joblib")
 scaler = joblib.load("scaler.joblib")
 expected_columns = joblib.load("columns.joblib")
 
-# Frontcase
-st.title("Heart Stroke Prediction by supremeinferno😳")
-st.markdown("Provide the following details to check your heart stroke risk:")
+# Title
+st.title("Heart Disease Prediction by supremeinferno 😳")
+st.markdown("Provide the following details to check your heart disease risk.")
 
-
-
-# Collect user input
+# Inputs
 age = st.slider("Age", 18, 100, 40)
 sex = st.selectbox("Sex", ["M", "F"])
 chest_pain = st.selectbox("Chest Pain Type", ["ATA", "NAP", "TA", "ASY"])
@@ -28,47 +25,59 @@ oldpeak = st.slider("Oldpeak (ST Depression)", 0.0, 6.0, 1.0)
 st_slope = st.selectbox("ST Slope", ["Up", "Flat", "Down"])
 
 
-
-# When Predict is clicked
 if st.button("Predict"):
 
-    # Create a raw input dictionary
-    raw_input = {
-        'Age': age,
-        'RestingBP': resting_bp,
-        'Cholesterol': cholesterol,
-        'FastingBS': fasting_bs,
-        'MaxHR': max_hr,
-        'Oldpeak': oldpeak,
-        'Sex_' + sex: 1,
-        'ChestPainType_' + chest_pain: 1,
-        'RestingECG_' + resting_ecg: 1,
-        'ExerciseAngina_' + exercise_angina: 1,
-        'ST_Slope_' + st_slope: 1
-    }
+    # Initialize all expected columns to zero
+    input_data = {col: 0 for col in expected_columns}
 
-    # Create input dataframe
-    input_df = pd.DataFrame([raw_input])
+    # Numerical features
+    input_data["Age"] = age
+    input_data["RestingBP"] = resting_bp
+    input_data["Cholesterol"] = cholesterol
+    input_data["FastingBS"] = fasting_bs
+    input_data["MaxHR"] = max_hr
+    input_data["Oldpeak"] = oldpeak
+
+    # One-hot encoded features
+    if f"Sex_{sex}" in input_data:
+        input_data[f"Sex_{sex}"] = 1
+
+    if f"ChestPainType_{chest_pain}" in input_data:
+        input_data[f"ChestPainType_{chest_pain}"] = 1
+
+    if f"RestingECG_{resting_ecg}" in input_data:
+        input_data[f"RestingECG_{resting_ecg}"] = 1
+
+    if f"ExerciseAngina_{exercise_angina}" in input_data:
+        input_data[f"ExerciseAngina_{exercise_angina}"] = 1
+
+    if f"ST_Slope_{st_slope}" in input_data:
+        input_data[f"ST_Slope_{st_slope}"] = 1
+
+    # Create DataFrame
+    input_df = pd.DataFrame([input_data])
+
+    try:
+        # Scale
+        scaled_input = scaler.transform(input_df)
+
+        # Predict
+        prediction = model.predict(scaled_input)[0]
+
+        if prediction == 1:
+            st.error("⚠️ High Risk of Heart Disease")
+        else:
+            st.success("✅ Low Risk of Heart Disease")
+
+    except Exception as e:
+        st.error(f"Error: {e}")
+
+        st.write("Expected Columns:")
+        st.write(expected_columns)
+
+        st.write("Input Columns:")
+        st.write(input_df.columns.tolist())
 
 
-    # Fill in missing columns with 0s
-    for col in expected_columns:
-        if col not in input_df.columns:
-            input_df[col] = 0
-            
 
-    # Reorder columns
-    input_df = input_df[expected_columns]
-
-    # Scale the input
-    scaled_input = scaler.transform(input_df)
-
-    # Make prediction
-    prediction = model.predict(scaled_input)[0]
-
-
-    # Show result
-    if prediction == 1:
-        st.error("⚠️ High Risk of Heart Disease")
-    else:
-        st.success("✅ Low Risk of Heart Disease")
+#python3 -m streamlit run app.py
