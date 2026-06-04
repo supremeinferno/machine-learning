@@ -63,11 +63,11 @@ st.markdown("""
 
 st.markdown("""
 <h1 style='text-align:center;color:#FF4B4B;'>
-❤️ Heart Disease Risk Predictor
+ Heart Disease Risk Predictor
 </h1>
 
 <h4 style='text-align:center;'>
-AI Powered Heart Health Assessment
+Machine Learning Based Heart Disease Predictor
 </h4>
 """, unsafe_allow_html=True)
 
