@@ -271,3 +271,6 @@ if st.button("🔍 Predict Heart Disease Risk"):
 
         st.write("Input Columns:")
         st.write(input_df.columns.tolist())
+
+
+#python3 -m streamlit run app.py
