@@ -3,9 +3,16 @@ import pandas as pd
 import joblib
 
 # Load files
-model = joblib.load("KNN_model.joblib")
-scaler = joblib.load("scaler.joblib")
-expected_columns = joblib.load("columns.joblib")
+from pathlib import Path
+import joblib
+
+BASE_DIR = Path(__file__).parent
+
+model = joblib.load(BASE_DIR / "KNN_model.joblib")
+scaler = joblib.load(BASE_DIR / "scaler.joblib")
+expected_columns = joblib.load(BASE_DIR / "columns.joblib")
+
+
 
 # Title
 st.title("Heart Disease Prediction by supremeinferno 😳")
