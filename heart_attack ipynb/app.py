@@ -111,7 +111,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption("Developed by supremeinferno 😳")
+    st.caption("Developed by supremeinferno😳 ")
 
 # ---------------- INPUT SECTION ---------------- #
 
