@@ -79,5 +79,4 @@ if st.button("Predict"):
         st.write(input_df.columns.tolist())
 
 
-
 #python3 -m streamlit run app.py
