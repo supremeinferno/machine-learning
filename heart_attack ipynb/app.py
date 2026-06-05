@@ -15,7 +15,7 @@ st.set_page_config(
 
 BASE_DIR = Path(__file__).parent
 
-model = joblib.load(BASE_DIR / "KNN_model.joblib")
+model = joblib.load(BASE_DIR / "SVC_model.joblib")
 scaler = joblib.load(BASE_DIR / "scaler.joblib")
 expected_columns = joblib.load(BASE_DIR / "columns.joblib")
 
@@ -221,12 +221,35 @@ if st.button("🔍 Predict Heart Disease Risk"):
         scaled_input = scaler.transform(input_df)
 
         prediction = model.predict(scaled_input)[0]
+        probability = model.predict_proba(scaled_input)[0]
+
+        risk_percentage = probability[1] * 100
+        safe_percentage = probability[0] * 100
 
         st.divider()
 
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric(
+                "⚠️ Heart Disease Risk",
+                f"{risk_percentage:.2f}%"
+            )
+
+        with col2:
+            st.metric(
+                "✅ Healthy Probability",
+                f"{safe_percentage:.2f}%"
+            )
+
+
         if prediction == 1:
 
-            st.error("⚠️ High Risk of Heart Disease")
+            st.progress(min(int(risk_percentage), 100))
+
+            st.error(
+                f"⚠️ High Risk of Heart Disease ({risk_percentage:.2f}%)"
+            )
 
             st.markdown("""
 ### Recommended Actions
@@ -246,7 +269,11 @@ if st.button("🔍 Predict Heart Disease Risk"):
 
         else:
 
-            st.success("✅ Low Risk of Heart Disease")
+            st.progress(min(int(safe_percentage), 100))
+
+            st.success(
+                f"✅ Low Risk of Heart Disease ({safe_percentage:.2f}%)"
+            )
 
             st.markdown("""
 ### Recommendations
