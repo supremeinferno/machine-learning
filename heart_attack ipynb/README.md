@@ -1,1 +1,0 @@
-# Heart_attack detection app
